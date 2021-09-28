@@ -21,6 +21,7 @@ public class EmploeeServiceimpl {
         return emploeedao.selectByExampleWithDept(null);
     }
     public void saveemp(Emplyee emplyee){
+        System.out.println("111111111");
         emploeedao.insertSelective(emplyee);
     }
 }

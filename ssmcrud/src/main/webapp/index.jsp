@@ -192,7 +192,7 @@ function topages(pn) {
     }
     //解析分页条
     function build_pages_nav(result) {
-     total=result.extend.pageInfo.pages;
+     total=result.extend.pageInfo.total;
         $("#pages_nav").empty();
         var ul=$("<ul class='pagination'></ul>");
         var nav=$("<nav class='aria-label=\"Page navigation\"'></nav>")
@@ -251,7 +251,7 @@ function topages(pn) {
                success:function (result) {
                    console.log(result);
                    $.each(result.extend.depts,function (index,item) {
-                       console.log(this.deptId)
+
                       var option=$("<option></option>").append(this.deptName).attr("value",this.deptId);
                        option.appendTo("#addempsModal select");
                    });
@@ -261,27 +261,32 @@ function topages(pn) {
 
            })
        }
-       $("#emp_save_btn").click(function () {
-           // alert($("#addempsModal form").serialize())
-           $.ajax({
-               url:"${APP_PATH}/saveEmp",
-               type:"post",
-               data:$("#addempsModal form").serialize(),
-               success:function (result) {
-                   console.log(result);
-                   if(result.code==200){//添加成功
-                       $("#addempsModal").modal("hide");
-                       topages(total);
-                       //测试
-                       //在测试
-                   }
 
-               },
-
-           })
-       })
 
     }
+    $("#emp_save_btn").click(function () {
+        console.log("按钮按了")
+        // alert($("#addempsModal form").serialize())
+        console.log(total);
+        $.ajax({
+
+            url:"${APP_PATH}/saveEmp",
+            type:"post",
+            data:$("#addempsModal form").serialize(),
+            success:function (result) {
+                console.log("ajax")
+                console.log(result);
+                if(result.code==200){//添加成功
+                    $("#addempsModal").modal("hide");
+                    topages(total);
+                    //测试
+                    //在测试
+                }
+
+            },
+
+        })
+    })
 
 
 </script>
