@@ -14,7 +14,7 @@ import java.util.List;
 public class DeptmentController {
     @Autowired
     Deptment deptment;
-    @RequestMapping("/getAllDept")
+    @RequestMapping("/getAllDept")//测试
     @ResponseBody
     public Msg getAllDept(){
         List<Department> departments = deptment.getDept();
