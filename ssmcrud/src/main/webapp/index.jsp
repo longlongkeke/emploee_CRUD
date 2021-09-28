@@ -272,6 +272,7 @@ function topages(pn) {
                    if(result.code==200){//添加成功
                        $("#addempsModal").modal("hide");
                        topages(total);
+                       //测试
                    }
 
                },
