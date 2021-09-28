@@ -11,10 +11,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,6 +50,26 @@ public class EmploeeController {
     public Msg saveEmp(Emplyee emplyee){
 //        System.out.println("emp:"+emplyee);
         emploeeServiceimpl.saveemp(emplyee);
+        return Msg.success();
+
+    }
+    //回显员工数据
+    @RequestMapping(value = "/emp/{id}",method = RequestMethod.GET)
+    @ResponseBody
+    public Msg emp(@PathVariable("id")Integer id){
+//        System.out.println("emp:"+emplyee);
+        System.out.println("77777777777777777");
+       Emplyee emplyee= emploeeServiceimpl.getEmpById(id);
+        System.out.println("从数据库得到的员工信息："+emplyee);
+        return Msg.success().add("emp",emplyee);
+
+    }
+    @RequestMapping(value = "/editEmp/{id}",method = RequestMethod.PUT)
+    @ResponseBody
+    public Msg editEmp(Emplyee emplyee){
+        System.out.println("edit:"+emplyee);
+//        System.out.println("emp:"+emplyee);
+        emploeeServiceimpl.updatEmp(emplyee);
         return Msg.success();
 
     }

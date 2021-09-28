@@ -1,6 +1,18 @@
 package cn.itcast.bean;
 
 public class Emplyee {
+    @Override
+    public String toString() {
+        return "Emplyee{" +
+                "id=" + id +
+                ", empname='" + empname + '\'' +
+                ", gender='" + gender + '\'' +
+                ", email='" + email + '\'' +
+                ", dId=" + dId +
+                ", department=" + department +
+                '}';
+    }
+
     private Integer id;
     public Emplyee(){
         super();

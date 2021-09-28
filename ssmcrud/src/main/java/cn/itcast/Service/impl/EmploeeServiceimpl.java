@@ -24,4 +24,13 @@ public class EmploeeServiceimpl {
         System.out.println("111111111");
         emploeedao.insertSelective(emplyee);
     }
+
+    public Emplyee getEmpById(Integer id) {
+        Emplyee emplyee = emploeedao.selectByPrimaryKey(id);
+        return emplyee;
+    }
+
+    public void updatEmp(Emplyee emplyee) {
+        emploeedao.updateByPrimaryKeySelective(emplyee);
+    }
 }

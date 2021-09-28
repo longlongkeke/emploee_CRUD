@@ -22,7 +22,7 @@
 </head>
 
 <body>
-<!-- Modal -->
+<!-- add Modal -->
 <div class="modal fade" id="addempsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -68,6 +68,56 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 <button type="button" class="btn btn-primary" id="emp_save_btn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  edit Modal -->
+<div class="modal fade" id="editempsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ModalLabel">更新员工</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">姓名：</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="pname" placeholder="姓名" name="empname">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">性别</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="lineRadio1" value="M" > 男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="lineRadio2" value="W"> 女
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" id="mail" placeholder="Password" name="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-2 control-label">部门</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="dId">
+
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="emp_update_btn">更新</button>
             </div>
         </div>
     </div>
@@ -148,7 +198,7 @@
 
 </div>
 <script>
-    var total;
+    var total,currentpage;
 $(function () {
    topages(1);
 })
@@ -169,20 +219,28 @@ function topages(pn) {
         $("#emps_table tbody").empty();
         var emps=result.extend.pageInfo.list;
         $.each(emps,function (index,item) {
+            console.log(item.id)
             var empId=$("<td></td>").append(item.id);
             var empName=$("<td></td>").append(item.empname);
             var empgender=$("<td></td>").append(item.gender=="M"?"男":"女");
             var empEmail=$("<td></td>").append(item.email);
             var empDeptName=$("<td></td>").append(item.department.deptName);
-            var oper=$("<td><button class='btn btn-primary'>编辑</button> <button class='btn-danger'>删除</button></td>")
+            var btn_edit=$("<button class='btn btn-primary edit_btn'>编辑</button>");//遇到一个问题：每次点击按钮属性值都是5（最后一个标签的id）原因：类标签选择器。每次都选择到前面几次循环添加的.edit_btn 和 del_btn
+                // <td class='oper_td'>
+            btn_edit.attr("edit_id",item.id);
+            var btn_del=$("<button class='btn-danger del_btn'>删除</button>");
+            btn_del.attr("del_id",item.id);
+            var btn_td=$("<td></td>").append(btn_edit).append(" ").append(btn_del);
+            $(".del_btn").attr("del_id",item.id);
             $("<tr></tr>").append(empId)
                 .append(empName)
                 .append(empgender)
                 .append(empEmail)
                 .append(empDeptName)
-                .append(oper)
+                .append(btn_td)
                 .appendTo("#emps_table tbody")
         });
+
         console.log(emps);
         
     }
@@ -193,6 +251,7 @@ function topages(pn) {
     //解析分页条
     function build_pages_nav(result) {
      total=result.extend.pageInfo.total;
+     currentpage=result.extend.pageInfo.pageNum;
         $("#pages_nav").empty();
         var ul=$("<ul class='pagination'></ul>");
         var nav=$("<nav class='aria-label=\"Page navigation\"'></nav>")
@@ -238,31 +297,33 @@ function topages(pn) {
         //点击新增按钮 弹出模态框
         $("#add").click(function () {
             //先发送ajax查出所有部门信息
-            getAllDept();
+            getAllDept("#addempsModal select");
             $('#addempsModal').modal({
                 backdrop:"static"
             })
         })
-       function getAllDept() {
-            console.log("111")
-           $.ajax({
-               url:"${APP_PATH}/getAllDept",
-               type:"get",
-               success:function (result) {
-                   console.log(result);
-                   $.each(result.extend.depts,function (index,item) {
-
-                      var option=$("<option></option>").append(this.deptName).attr("value",this.deptId);
-                       option.appendTo("#addempsModal select");
-                   });
 
 
-               },
 
-           })
-       }
+    }
+    function getAllDept(para) {
+        console.log("111")
+        $(para).empty();
+        $.ajax({
+            url:"${APP_PATH}/getAllDept",
+            type:"get",
+            success:function (result) {
+                console.log(result);
+                $.each(result.extend.depts,function (index,item) {
+
+                    var option=$("<option></option>").append(this.deptName).attr("value",this.deptId);
+                    option.appendTo(para);
+                });
 
 
+            },
+
+        })
     }
     $("#emp_save_btn").click(function () {
         console.log("按钮按了")
@@ -287,7 +348,48 @@ function topages(pn) {
 
         })
     })
+    $(document).on("click",".edit_btn",function () {
 
+        //获取部门到修改模态框
+        getAllDept("#editempsModal select")
+      //  alert($(this).attr("edit_id"))
+        getEmpInfo($(this).attr("edit_id"));
+        $("#emp_update_btn").attr("edit_id",$(this).attr("edit_id"))
+        $('#editempsModal').modal({
+            backdrop:"static"
+        })
+    })
+    function getEmpInfo(id) {
+    console.log("ajax:"+id)
+        $.ajax({
+            url:"${APP_PATH}/emp/"+id,
+            type:"get",
+            success:function (res) {
+                console.log(res);
+                $('#pname').val(res.extend.emp.empname);
+                $('#mail').val(res.extend.emp.email);
+                $("#editempsModal input[name=gender]").val([res.extend.emp.gender])
+                $("#editempsModal select").val([res.extend.emp.dId])
+
+            }
+        })
+    }
+
+    //更新
+    $("#emp_update_btn").click(function () {
+        $.ajax({
+            url:"${APP_PATH}/editEmp/"+$(this).attr("edit_id"),
+            type:"put",
+            data:$("#editempsModal form").serialize(),
+            success:function (res) {
+                console.log(res);
+                $("#editempsModal").modal("hide")
+                topages(currentpage);
+
+
+            }
+        })
+    })
 
 </script>
 
