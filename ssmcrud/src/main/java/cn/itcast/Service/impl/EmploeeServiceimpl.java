@@ -6,6 +6,7 @@ import cn.itcast.Service.IEmploeeService;
 import cn.itcast.bean.Department;
 import cn.itcast.bean.DepartmentExample;
 import cn.itcast.bean.Emplyee;
+import cn.itcast.bean.EmplyeeExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +33,19 @@ public class EmploeeServiceimpl {
 
     public void updatEmp(Emplyee emplyee) {
         emploeedao.updateByPrimaryKeySelective(emplyee);
+    }
+
+    public void delEmpByid(Integer id) {
+        emploeedao.deleteByPrimaryKey(id);
+    }
+
+    public void delEmp(List<Integer> list) {
+        System.out.println("service层："+list);
+        EmplyeeExample emplyeeExample=new EmplyeeExample();
+        EmplyeeExample.Criteria criteria=emplyeeExample.createCriteria();
+        //delete from xxx where emp_id in(1,2,3)
+        criteria.andIdIn(list);
+
+        emploeedao.deleteByExample(emplyeeExample);
     }
 }

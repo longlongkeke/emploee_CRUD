@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -73,4 +74,27 @@ public class EmploeeController {
         return Msg.success();
 
     }
+    @RequestMapping(value = "/delEmp/{id}",method = RequestMethod.DELETE)
+    @ResponseBody
+    public Msg delEmp(@PathVariable("id")String id){
+        if(id.contains("-")){
+        //多个删除
+         List<Integer> list=new ArrayList<>();
+         String[] ids= id.split("-");
+            System.out.println(ids);
+        for (String item:ids) {
+            list.add(Integer.parseInt(item));
+        }
+            System.out.println(list);
+            emploeeServiceimpl.delEmp(list);
+
+        }else{//单个删除
+            int empid = Integer.parseInt(id);
+            emploeeServiceimpl.delEmpByid(empid);
+        }
+
+        return Msg.success();
+
+    }
+
 }

@@ -131,7 +131,7 @@
     <div class="row">
         <div class="col-md-4 col-md-offset-8">
             <button class="btn btn-primary" id="add">新增</button>
-            <button class="btn btn-danger">删除</button>
+            <button class="btn btn-danger" id="del_btn">删除</button>
         </div>
     </div>
     <br>
@@ -140,6 +140,7 @@
             <table class="table table-hover" id="emps_table">
                 <thead>
                 <tr>
+                    <th><input type='checkbox' id="checkboxAll"/></th>
                     <th>#</th>
                     <th>empName</th>
                     <th>gender</th>
@@ -220,6 +221,7 @@ function topages(pn) {
         var emps=result.extend.pageInfo.list;
         $.each(emps,function (index,item) {
             console.log(item.id)
+            var checkbox=$("<td><input type='checkbox' class='checkbox'/></td>");
             var empId=$("<td></td>").append(item.id);
             var empName=$("<td></td>").append(item.empname);
             var empgender=$("<td></td>").append(item.gender=="M"?"男":"女");
@@ -231,8 +233,9 @@ function topages(pn) {
             var btn_del=$("<button class='btn-danger del_btn'>删除</button>");
             btn_del.attr("del_id",item.id);
             var btn_td=$("<td></td>").append(btn_edit).append(" ").append(btn_del);
-            $(".del_btn").attr("del_id",item.id);
-            $("<tr></tr>").append(empId)
+
+            $("<tr></tr>").append(checkbox)
+                .append(empId)
                 .append(empName)
                 .append(empgender)
                 .append(empEmail)
@@ -385,12 +388,60 @@ function topages(pn) {
                 console.log(res);
                 $("#editempsModal").modal("hide")
                 topages(currentpage);
-
-
             }
         })
     })
+    //多个删除
+    $("#del_btn").click(function () {
+        var empnames="";
+        var empIds="";
+        console.log($(".checkbox:checked").parents("tr").find("td:eq(2)").text())
+        console.log($(".checkbox:checked").parents("tr").find("td:eq(1)").text())
+        $.each($(".checkbox:checked"),function () {
+            empnames+=$(this).parents("tr").find("td:eq(2)").text()+",";
+            empIds+=$(this).parents("tr").find("td:eq(1)").text()+"-";
 
+        })
+        console.log(empnames)
+       empIds=empIds.substring(0,empIds.length-1)
+        if(confirm("确认要删除："+empnames+"?")){
+            $.ajax({
+                url:"${APP_PATH}/delEmp/"+empIds,
+                type:"delete",
+                success:function (res) {
+                    console.log(res);
+                    topages(currentpage)
+                    $("#checkboxAll").prop("checked",false);
+
+                }
+            })
+        }
+
+
+    })
+    //单个删除
+    $(document).on("click",".del_btn",function () {
+        var empid = $(this).attr("del_id");
+        var empname = $(this).parents("tr").find("td:eq(2)").text();
+        console.log(empid)
+        if(confirm("确定要删除"+empname+"?")){
+            $.ajax({
+                url:"${APP_PATH}/delEmp/"+empid,
+                type:"delete",
+                success:function (res) {
+                   alert(res.msg)
+                    topages(currentpage)
+                   // window.location.reload()
+
+                }
+            })
+
+        }
+    })
+    //全选
+    $("#checkboxAll").click(function () {
+        $(".checkbox").prop("checked",$(this).prop("checked"));
+    })
 </script>
 
 </body>
