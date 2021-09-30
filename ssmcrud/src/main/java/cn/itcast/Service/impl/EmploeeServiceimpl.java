@@ -48,4 +48,14 @@ public class EmploeeServiceimpl {
 
         emploeedao.deleteByExample(emplyeeExample);
     }
+
+    public List<Emplyee> selectExampleEmp(String empName) {
+        System.out.println("模糊查询的service:"+empName);
+        EmplyeeExample emplyeeExample1=new EmplyeeExample();
+        EmplyeeExample.Criteria criteria=emplyeeExample1.createCriteria();
+        //delete from xxx where emp_id in(1,2,3)
+        criteria.andEmpnameLike("%"+empName+"%");
+        return emploeedao.selectByExampleWithDept(emplyeeExample1);
+
+    }
 }

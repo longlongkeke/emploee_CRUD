@@ -129,11 +129,27 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4 col-md-offset-8">
-            <button class="btn btn-primary" id="add">新增</button>
-            <button class="btn btn-danger" id="del_btn">删除</button>
-        </div>
+            <div style="float: left">
+                <div style="margin-left: 200px;width: 260px">
+                    <form class="form-inline">
+                        <input id="search" placeholder="输入你要查询的内容"   class="form-control" />
+                        <input class="btn btn-primary" id="search_btn" onclick="myfuction()" type="button" value="查询"/>
+                    </form>
+                    <%--<button class="btn btn-primary" id="search_btn" onclick="myfuction()" style="float: right">查询</button>--%>
+
+                </div>
+
+            </div>
+                <div style="float: right">
+                    <div style="margin-right: 200px">
+                        <button class="btn btn-primary" id="add">新增</button>
+                        <button class="btn btn-danger" id="del_btn">删除</button>
+                    </div>
+
+                </div>
+
     </div>
+
     <br>
     <div class="row">
         <div class="col-md-12">
@@ -274,6 +290,7 @@ function topages(pn) {
         $.each(result.extend.pageInfo.navigatepageNums,function (index,item) {
             var numli=$("<li></li>").append($("<a></a>").append(item));
             if(result.extend.pageInfo.pageNum==item){
+                console.log("正在点击第"+item+"页")
                 numli.addClass("active");
             }
             numli.click(function () {
@@ -438,11 +455,147 @@ function topages(pn) {
 
         }
     })
+    //模糊搜索功能
+    // $("#search_btn").click(function () {
+    //     console.log("模糊搜索查询按钮")
+    //     if($("#search").val()!=null){
+    //         console.log("模糊搜索查询按钮")
+    //         myfuction();
+    //     }
+    //
+    // })
+    // $("#search").keyup(function () {
+    //     myfuction();
+    // })
+    //输入框改变
+   function myfuction() {
+        var empnameExample=$("#search").val();
+        console.log("模糊查询button按钮的"+empnameExample)
+        $.ajax({
+            contentType:"application/x-www-form-urlencoded:charset=UTF-8",
+            url:"${APP_PATH}/selectExampleEmp/"+empnameExample,
+            type:"get",
+            success:function (res) {
+               // alert(res.msg)
+                console.log(res);
+                build_emps_table(res);
+                build_pages_info(res);
+                build_pages_nav_Example(res)
+                // window.location.reload()
+
+            }
+        })
+    }
     //全选
     $("#checkboxAll").click(function () {
         $(".checkbox").prop("checked",$(this).prop("checked"));
     })
+    //模糊查询的解析分页条
+    function build_pages_nav_Example(result) {
+    console.log(result);
+        total=result.extend.pageInfo.total;
+        currentpage=result.extend.pageInfo.pageNum;
+        $("#pages_nav").empty();
+        var ul=$("<ul class='pagination'></ul>");
+        var nav=$("<nav class='aria-label=\"Page navigation\"'></nav>")
+        var startpages=$("<li></li>").append($("<a ></a>").append("首页"));
+        var prepages=$("<li></li>").append($("<a ></a>").append("&laquo;"));
+        var nextpages=$("<li></li>").append($("<a ></a>").append("&raquo;"));
+        var lastpages=$("<li></li>").append($("<a ></a>").append("尾页"));
+        if(result.extend.pageInfo.hasNextPage==false){
+            nextpages.addClass("disabled");
+            lastpages.addClass("disabled");
+        }
+        if(result.extend.pageInfo.hasPreviousPage==false){
+            startpages.addClass("disabled");
+            prepages.addClass("disabled");
+        }
+        ul.append(startpages).append(prepages);
+        $.each(result.extend.pageInfo.navigatepageNums,function (index,item) {
+            var numli=$("<li></li>").append($("<a></a>").append(item));
+            if(result.extend.pageInfo.pageNum==item){
+                console.log(result.extend.pageInfo.pageNum)
+                numli.addClass("active");
+                console.log("模糊查询正在点击第"+item+"页")
+            }
+            numli.click(function () {
+                $.ajax({
+                    url:"${APP_PATH}/selectExampleEmpByid",
+                    data:"pn="+item ,
+                    type:"get",
+                    success:function (result) {
+                        console.log(result);
+                        build_emps_table(result);
+                        build_pages_info(result);
+                        build_pages_nav_Example(result);
+                    }
+                })
+            })
+            ul.append(numli);
+
+        })
+        ul.append(nextpages).append(lastpages);
+        nav.append(ul);
+        nav.appendTo("#pages_nav");
+        startpages.click(function () {
+            // topages(1);
+            $.ajax({
+                url:"${APP_PATH}/selectExampleEmpByid",
+                data:"pn="+1 ,
+                type:"get",
+                success:function (result) {
+                    console.log(result);
+                    build_emps_table(result);
+                    build_pages_info(result);
+                    build_pages_nav_Example(result);
+                }
+            })
+        })
+        prepages.click(function () {
+            // topages(result.extend.pageInfo.pageNum-1);
+            $.ajax({
+                url:"${APP_PATH}/selectExampleEmpByid",
+                data:"pn="+result.extend.pageInfo.pageNum-1 ,
+                type:"get",
+                success:function (result) {
+                    console.log(result);
+                    build_emps_table(result);
+                    build_pages_info(result);
+                    build_pages_nav_Example(result);
+                }
+            })
+        })
+        nextpages.click(function () {
+            // topages(result.extend.pageInfo.pageNum+1);模糊查询的topages方法被改了 请求地址变了
+            $.ajax({
+                url:"${APP_PATH}/selectExampleEmpByid",
+                data:"pn="+result.extend.pageInfo.pageNum+1 ,
+                type:"get",
+                success:function (result) {
+                    console.log(result);
+                    build_emps_table(result);
+                    build_pages_info(result);
+                    build_pages_nav_Example(result);
+                }
+            })
+        })
+        lastpages.click(function () {
+            // topages(result.extend.pageInfo.pages);
+            $.ajax({
+                url:"${APP_PATH}/selectExampleEmpByid",
+                data:"pn="+result.extend.pageInfo.pages ,
+                type:"get",
+                success:function (result) {
+                    console.log(result);
+                    build_emps_table(result);
+                    build_pages_info(result);
+                    build_pages_nav_Example(result);
+                }
+            })
+        })
+    }
 </script>
+
 
 </body>
 </html>
