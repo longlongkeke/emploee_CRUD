@@ -108,7 +108,7 @@ public class EmploeeController {
         PageHelper.startPage(pn, 5);
         List<Emplyee> emplyees = emploeeServiceimpl.selectExampleEmp(empName);
         System.out.println("模糊查询的结果："+emplyees);
-      // request.setAttribute("emplyees",emplyees);
+      // request.setAttribute("emplyees",emplyees)
         PageInfo pageInfo=new PageInfo(emplyees,5);
         System.out.println(pageInfo);
         session.setAttribute("name",empName);
