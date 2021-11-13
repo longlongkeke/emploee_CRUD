@@ -44,32 +44,32 @@
         </property>
     </bean>
 
-    <!--配置扫描器，将mybatis接口的实现加入到ioc容器-->
+    <!--配置扫描器，将mybatis接口的实现加入到ioc容器,创建DAO-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" id="mapperScannerConfigurer">
         <property name="basePackage" value="cn.itcast.Dao"/>
     </bean>
-    <!--&lt;!&ndash;配置一个可以批量操作的sqlsession&ndash;&gt;-->
-    <!--<bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSessionTemplate">-->
-        <!--<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>-->
-        <!--<constructor-arg name="executorType" value="BATCH"></constructor-arg>-->
+    <!--配置一个可以批量操作的sqlsession-->
+    <bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+        <constructor-arg name="executorType" value="BATCH"></constructor-arg>
 
-    <!--</bean>-->
-    <!--&lt;!&ndash;配置事务管理器&ndash;&gt;-->
-    <!--<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">-->
-        <!--<property name="dataSource" ref="dataSource"></property>-->
-    <!--</bean>-->
-    <!--&lt;!&ndash;配置事务的通知&ndash;&gt;-->
-    <!--<tx:advice id="txadvice" transaction-manager="transactionManager">-->
-        <!--<tx:attributes>-->
-            <!--<tx:method name="*" propagation="REQUIRED"></tx:method>-->
-            <!--<tx:method name="find*" propagation="SUPPORTS" read-only="true"></tx:method>-->
-        <!--</tx:attributes>-->
-    <!--</tx:advice>-->
+    </bean>
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--配置事务的通知-->
+    <tx:advice id="txadvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED"></tx:method>
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"></tx:method>
+        </tx:attributes>
+    </tx:advice>
 
-    <!--&lt;!&ndash;配置aop&ndash;&gt;-->
-    <!--<aop:config>-->
-        <!--&lt;!&ndash;配置切入点表达式&ndash;&gt;-->
-        <!--<aop:pointcut id="pt1" expression="execution(* cn.itcast.service.impl.*.*(..))"></aop:pointcut>-->
-        <!--<aop:advisor advice-ref="txadvice" pointcut-ref="pt1"></aop:advisor>-->
-    <!--</aop:config>-->
+    <!--配置aop-->
+    <aop:config>
+        <!--配置切入点表达式-->
+        <aop:pointcut id="pt1" expression="execution(* cn.itcast.service.impl.*.*(..))"></aop:pointcut>
+        <aop:advisor advice-ref="txadvice" pointcut-ref="pt1"></aop:advisor>
+    </aop:config>
 </beans>

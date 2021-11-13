@@ -350,7 +350,6 @@ function topages(pn) {
         // alert($("#addempsModal form").serialize())
         console.log(total);
         $.ajax({
-
             url:"${APP_PATH}/saveEmp",
             type:"post",
             data:$("#addempsModal form").serialize(),
